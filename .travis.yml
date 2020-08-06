@@ -1,0 +1,22 @@
+sudo: required
+services:
+  - docker
+language: node_js
+node_js:
+  - 12
+env:
+  global:
+    - secure: iJ/OaaH3f1mYR+wZRPzLXR6+UMUoYlpw+E2MwBc3U8ta1DUbWK6CicPx9RSk3mr1nd92dWEbRLBnDQXnYwgzmjRg6a9nuQIaASEx3X8hp/OO+Cp2ILdaRd/+HBb4LTUeNuxV4mJ2CcxKWimn3Okan2qXnD1lYh1plm/tH5IGyCkauX6L8/StdHGGpeYxuW93grGAbxe2xT7IxJJnGpWC12K9zKIINDb6ICCfEZIwhA+ihNtEB+kf3v1id7oKJQ4K7cHV+u5P+ayLh//w52PVi3OMzOI4jsdNStxAA6YnilQgXAu4H/r2VpqXfcqeDah4114Nlpxbzbl2QDksKI2y2cMN+LT0i95lwbN3avVrMmXp4jDMrpA/PdpPv5E8e8W5WxbF4XaKijTY/w16TVfUwKQM2fxAfrLKLpMStNAVO1glGkXBUa9QenK0wCpPm1E5RvNdM8813XR+2YjodwaKCX+RbKAVpZqgiuU+nWlkyQs0LpKzvCv4DV+m9NUCBt6Ud1fslvKA9EpHnURp2Qn1ewoXu2iuDSwMqDyXEqgIrwKFgx/z39QUdIRcfkigT9JQ31l+1XAc3ZAOMe4RT5P1FRUSQ5DqRY/C+2To7+WoY2gRhI7/90qGDdCKT5VtNGe5XwqPHyPiH2RHsTJtN3FjJDdg2pqC+0bcWrI5KVW9Hk0=
+    - secure: fC9Lq4SIsKFGtuLLOLVqVkWZL+qgsOT0JUn91qiMTywNUBrKfXm3lFsqRvdFQY9/ALcOv53jYwWsCwDpBOljj6fvu8c8Oeic46ii9CwGzkwbk/1a21JjWZMC3rNe41RHFMccGiOaAPNB5ei90NDenbTSqhDh7PfHKQ6Gsy1XdZ+Rfe4/Zy9ep5LAGC6joA834pxrztj6EOHDWEuOZX1IZwWmYWsJlO/IZAnzz+yee2GLKrLGU3aRPwlSKkMER17jiEYAuukEY3tcnM44GfN8kjs4nnlNuaQfXynqsjClUVUeBuCisPWKTtwIypTi2jYachyFu9QikfZiGOAFl1lOu3Ahw6qI0EElGStVe6q+rEuijxao0BEdboUkW4bV/XeXu6+d6QyW/XVuaDCwTvlShCPzuKwFSOH5mqxCfcS/k+Ejg1Bnm4QoVsNzfNNiOlk42oxTPSeMFx1XIy8f3uI+2WteP4xA+7kYbqI0tSyxrsTUqufCDlqjqkfO1gU0dSrzRsAukzd1pue6BVqKtALJV8PDCJP5Vcn7Ht34MF437FgI8DeONDRJBt27ISmYLvOQTX5Ah51pcaHmJDinHIZ86gq9ZsKffDnzlVhDJrjoP2+Ythph0rhJJi+b5KPDuVplgoS3U+fLuTh/FikzSGPcsc2i+sqS3T3EOrLr6lTySmc=
+    - secure: Cx3KauhC3TXIHYdoVbSrflT5SaysuUcXk5vNbilLdQfwin0HDNFRwi0sejIpKU6NAMAWm+jmAPmfGOFIxgWt6AFeAfQ7uHcbxnQKPP/gNDnJGF0pbsXeSafHpjjSRf4NSHTumTkza9ktP1dgBYPhGCmNXAGer0zMAgYY7fWdGLjxcgYCrf/dggG3pKqimUtInVZ5CSSof/o6i5BWScRpiFfrRbUTAMjR8iocCpBL/8wJ5NgWF4d1FJ9yp1dmiFINdU/tXKda14gftVJPidH8ebOInCaIXgIljul0nvOm3jCbfsxM9pOB9wr7ocBR0EqzfyxDe8GYcsxkjq7bEpB60lZD3n9VDonL7zRrV6OLSxi5e2StAe48EVMTbSdIwS4bPbCata/u2m66VD3yeLL+qhdSwVVC8EUxzdMsSAsnTDtzeZbPDV5j/KUi6fYhsiprYvtGWdwwuFgmmA+LG6ev0YM4BJS28gGWMRwGISKkfRHKJpJ4nM8KsIimcWU1As6JgxMuolk2pcok9IKCbr6unAGF1f8tGAbZmip57j0lyATMwIQnP9Ot7/OunT19HSRoaX80jMoGvIHUsfUi2samlxWrgw7jhv+j/VjmY5iBJSTpqxhJizbAZks9PAzxp0fVQR7LQU7JlpdiACbxrbatWRo2IPclsqHC6AqZedYy1HY=
+    - COMMIT=${TRAVIS_COMMIT::8}
+    - NODE_BASE=gkphv/node-base
+script:
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+  - echo "TRAVIS_BRANCH=$TRAVIS_BRANCH, PR=$PR, BRANCH=$BRANCH"
+  - cd node-base && docker build -f Dockerfile -t $NODE_BASE:$COMMIT .
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker tag $NODE_BASE:$COMMIT $NODE_BASE:travis-$TRAVIS_BUILD_NUMBER
+after_success:
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASSWORD
+  - docker push $NODE_BASE
