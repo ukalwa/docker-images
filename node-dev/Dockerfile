@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:0-12
 
 # Get latest git
 ENV GIT_VERSION 2.28.0
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get install -y dh-autoreconf libcurl4-gnutls-dev libexpat1-dev \
     gettext libz-dev libssl-dev \
@@ -18,3 +19,4 @@ RUN apt-get update \
 # Add ZSH plugins
 RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions \
     && echo "source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" >> ~/.zshrc
+ENV DEBIAN_FRONTEND=dialog
