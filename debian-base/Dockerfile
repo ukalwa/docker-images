@@ -9,7 +9,7 @@ RUN git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosu
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
     && curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list | tee /etc/apt/sources.list.d/msprod.list \
     && apt-get update \
-    && ACCEPT_EULA=Y apt-get install -y --no-install-recommends vim mssql-tools postgresql-client \
+    && ACCEPT_EULA=Y apt-get install -y --no-install-recommends vim mssql-tools postgresql-client tmux \
     # Clean up
     && apt-get autoremove -y \
     && apt-get clean -y \
