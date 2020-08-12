@@ -15,6 +15,4 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' | tee -a /root/.bashrc /root/.zshrc /home/${NONROOT_USER}/.bashrc >> /home/${NONROOT_USER}/.zshrc
-# Copy base scripts
-COPY ./node-debian.sh /usr/local/share
 ENV DEBIAN_FRONTEND=dialog
