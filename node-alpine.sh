@@ -55,5 +55,5 @@ EOF
     chown ${NONROOT_USER} ${NVM_DIR} /home/${NONROOT_USER}/.bashrc /home/${NONROOT_USER}/.zshrc
 fi
 
-# Install yarn
-source ${NVM_DIR}/nvm.sh && npm i -g yarn
+# Install commonly used nodejs tools
+source ${NVM_DIR}/nvm.sh && npm i -g yarn lerna eslint prettier
