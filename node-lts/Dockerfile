@@ -18,5 +18,6 @@ RUN apt-get update && apt-get install -y apt-transport-https ca-certificates cur
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
+RUN npm i -g npm 
 RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
 ENV DEBIAN_FRONTEND=dialog

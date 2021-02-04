@@ -56,4 +56,4 @@ EOF
 fi
 
 # Install commonly used nodejs tools
-source ${NVM_DIR}/nvm.sh && npm i -g yarn lerna eslint prettier
+source ${NVM_DIR}/nvm.sh && npm i -g yarn lerna eslint prettier npm

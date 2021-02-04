@@ -20,4 +20,5 @@ RUN apk add --no-cache curl gnupg --virtual .build-dependencies -- && \
     # Deleting packages
     apk del .build-dependencies && rm -f msodbcsql*.sig mssql-tools*.apk && rm -rf rm -rf /var/cache/apk/*
 
+RUN npm i -g npm
 RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.profile

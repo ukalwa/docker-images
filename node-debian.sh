@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #-------------------------------------------------------------------------------------------------------------
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See https://go.microsoft.com/fwlink/?linkid=2090316 for license information.
@@ -43,11 +43,4 @@ fi" | tee -a /root/.bashrc /root/.zshrc /home/${NONROOT_USER}/.bashrc >> /home/$
 chown ${NONROOT_USER}:${NONROOT_USER} /home/${NONROOT_USER}/.bashrc /home/${NONROOT_USER}/.zshrc
 chown -R ${NONROOT_USER}:root ${NVM_DIR}
 
-# Install yarn
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - 2>/dev/null
-echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-apt-get update
-apt-get -y install --no-install-recommends yarn
-apt-get autoremove -y
-apt-get clean -y
-rm -rf /var/lib/apt/lists/*
+source ${NVM_DIR}/nvm.sh && npm i -g yarn lerna eslint prettier npm
