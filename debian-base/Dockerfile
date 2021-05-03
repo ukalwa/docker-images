@@ -18,3 +18,4 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
 RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' | tee -a /root/.bashrc /root/.zshrc /home/${NONROOT_USER}/.bashrc >> /home/${NONROOT_USER}/.zshrc
 ENV DEBIAN_FRONTEND=dialog
 COPY ./node-debian.sh /usr/local/share/node-install.sh
+COPY ./nvm-install.sh /usr/local/share/nvm-install.sh

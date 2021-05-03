@@ -32,7 +32,7 @@ EOF
 # Install NVM
 apk add --no-cache libstdc++
 mkdir -p ${NVM_DIR}
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.1/install.sh | NODE_VERSION= bash 2>&1
+cat /usr/local/share/nvm-install.sh | NODE_VERSION= bash 2>&1
 # Add NVM init and add code to update NVM ownership if UID/GID changes
 if [ "${NONROOT_USER}" != "root" ] && id -u $NONROOT_USER > /dev/null 2>&1; then
     # Add NVM init and add code to update NVM ownership if UID/GID changes
@@ -55,5 +55,6 @@ EOF
     chown ${NONROOT_USER} ${NVM_DIR} /home/${NONROOT_USER}/.bashrc /home/${NONROOT_USER}/.zshrc
 fi
 
-# Install commonly used nodejs tools
-source ${NVM_DIR}/nvm.sh && npm i -g yarn lerna eslint prettier npm
+echo Install common build tools
+source ${NVM_DIR}/nvm.sh && npm i -g lerna eslint prettier npm
+source ${NVM_DIR}/nvm.sh && npm install -g yarn

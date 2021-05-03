@@ -34,3 +34,4 @@ RUN apk add --no-cache vim postgresql-client tmux && \
 
 RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' | tee -a /root/.bashrc /root/.zshrc /home/${NONROOT_USER}/.bashrc >> /home/${NONROOT_USER}/.zshrc
 COPY ./node-alpine.sh /usr/local/share/node-install.sh
+COPY ./nvm-install.sh /usr/local/share/nvm-install.sh

@@ -26,21 +26,29 @@ fi
 
 # Install NVM
 mkdir -p ${NVM_DIR}
-curl -so- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash 2>&1
-if [ "${NODE_VERSION}" != "" ]; then
-    /bin/bash -c "source $NVM_DIR/nvm.sh && nvm alias default ${NODE_VERSION}" 2>&1
+cat /usr/local/share/nvm-install.sh | NODE_VERSION= bash 2>&1
+# Add NVM init and add code to update NVM ownership if UID/GID changes
+if [ "${NONROOT_USER}" != "root" ] && id -u $NONROOT_USER > /dev/null 2>&1; then
+    # Add NVM init and add code to update NVM ownership if UID/GID changes
+    tee -a /root/.zshrc /home/${NONROOT_USER}/.zshrc >> /home/${NONROOT_USER}/.bashrc \
+<<EOF
+source \$HOME/.profile
+export NVM_DIR="${NVM_DIR}"
+[ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "\$NVM_DIR/bash_completion" ] && \\. "\$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+if [ "\$(stat -c '%U' \$NVM_DIR)" != "${NONROOT_USER}" ]; then
+    sudo chown -R ${NONROOT_USER}:root \$NVM_DIR
+fi
+EOF
+
+    if [ "${NODE_VERSION}" != "" ]; then
+        source ${NVM_DIR}/nvm.sh; source ${HOME}/.profile; nvm install ${NODE_VERSION}
+    fi
+    
+    # Update ownership
+    chown ${NONROOT_USER} ${NVM_DIR} /home/${NONROOT_USER}/.bashrc /home/${NONROOT_USER}/.zshrc
 fi
 
-echo "export NVM_DIR=\"${NVM_DIR}\"\n\
-[ -s \"\$NVM_DIR/nvm.sh\" ] && \\. \"\$NVM_DIR/nvm.sh\"\n\
-[ -s \"\$NVM_DIR/bash_completion\" ] && \\. \"\$NVM_DIR/bash_completion\"" \
-| tee -a /root/.bashrc /home/${NONROOT_USER}/.bashrc /home/${NONROOT_USER}/.zshrc >> /root/.zshrc
-
-echo "if [ \"\$(stat -c '%U' \$NVM_DIR)\" != \"${NONROOT_USER}\" ]; then\n\
-    sudo chown -R ${NONROOT_USER}:root \$NVM_DIR\n\
-fi" | tee -a /root/.bashrc /root/.zshrc /home/${NONROOT_USER}/.bashrc >> /home/${NONROOT_USER}/.zshrc
-
-chown ${NONROOT_USER}:${NONROOT_USER} /home/${NONROOT_USER}/.bashrc /home/${NONROOT_USER}/.zshrc
-chown -R ${NONROOT_USER}:root ${NVM_DIR}
-
-source ${NVM_DIR}/nvm.sh && npm i -g yarn lerna eslint prettier npm
+echo Install common build tools
+source ${NVM_DIR}/nvm.sh && npm install -g yarn
+source ${NVM_DIR}/nvm.sh && npm i -g lerna eslint prettier npm
