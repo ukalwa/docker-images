@@ -1,54 +1,49 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #-------------------------------------------------------------------------------------------------------------
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See https://go.microsoft.com/fwlink/?linkid=2090316 for license information.
 #-------------------------------------------------------------------------------------------------------------
 
-# Syntax: ./node-debian.sh <directory to install nvm> <node version to install (use "none" to skip)> <non-root user>
+# Syntax: ./node-install.sh <node version to install (use "none" to skip)> <directory to install nvm>
 # https://github.com/microsoft/vscode-dev-containers/blob/master/containers/javascript-node/.devcontainer/library-scripts/node-debian.sh
 set -e
 
-export NVM_DIR=${1:-"/usr/local/share/nvm"}
-export NODE_VERSION=${2:-"lts/*"}
-NONROOT_USER=${3:-"vscode"}
+export NODE_VERSION=${1:-"lts/*"}
+export NVM_DIR=${2:-"/usr/local/share/nvm"}
 
 if [ "$(id -u)" -ne 0 ]; then
     echo 'Script must be run a root. Use sudo or set "USER root" before running the script.'
     exit 1
 fi
 
-# Ensure apt is in non-interactive to avoid prompts
-export DEBIAN_FRONTEND=noninteractive
-
 if [ "${NODE_VERSION}" = "none" ]; then
     export NODE_VERSION=
 fi
 
-# Install NVM
+if [ "$(awk -F= '/^NAME/{print $2}' /etc/os-release | tr -d \")" = "Alpine Linux" ]; then
+    # musl based nodejs build path
+    # https://github.com/nvm-sh/nvm/issues/1102
+    echo '
+export NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release
+nvm_get_arch() { nvm_echo "x64-musl"; }' >> /root/.profile
+    apk add --no-cache libstdc++
+fi
+
 mkdir -p ${NVM_DIR}
 cat /usr/local/share/nvm-install.sh | NODE_VERSION= bash 2>&1
 # Add NVM init and add code to update NVM ownership if UID/GID changes
-if [ "${NONROOT_USER}" != "root" ] && id -u $NONROOT_USER > /dev/null 2>&1; then
-    # Add NVM init and add code to update NVM ownership if UID/GID changes
-    tee -a /root/.zshrc /home/${NONROOT_USER}/.zshrc >> /home/${NONROOT_USER}/.bashrc \
+tee -a /root/.zshrc >> /root/.bashrc \
 <<EOF
 source \$HOME/.profile
 export NVM_DIR="${NVM_DIR}"
 [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "\$NVM_DIR/bash_completion" ] && \\. "\$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-if [ "\$(stat -c '%U' \$NVM_DIR)" != "${NONROOT_USER}" ]; then
-    sudo chown -R ${NONROOT_USER}:root \$NVM_DIR
-fi
 EOF
 
-    if [ "${NODE_VERSION}" != "" ]; then
-        source ${NVM_DIR}/nvm.sh; source ${HOME}/.profile; nvm install ${NODE_VERSION}
-    fi
-    
-    # Update ownership
-    chown ${NONROOT_USER} ${NVM_DIR} /home/${NONROOT_USER}/.bashrc /home/${NONROOT_USER}/.zshrc
+if [ "${NODE_VERSION}" != "" ]; then
+    source ${NVM_DIR}/nvm.sh; source ${HOME}/.profile; nvm install ${NODE_VERSION}
 fi
 
 echo Install common build tools
-source ${NVM_DIR}/nvm.sh && npm install -g yarn
-source ${NVM_DIR}/nvm.sh && npm i -g lerna eslint prettier npm
+source ${NVM_DIR}/nvm.sh && npm i -g yarn
+source ${NVM_DIR}/nvm.sh && npm update -g
